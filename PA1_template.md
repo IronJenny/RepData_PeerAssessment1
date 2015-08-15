@@ -1,18 +1,30 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r, echo=TRUE}
+
+```r
 ###set working directory
 setwd("~/R/workspace/JHU/05 Reproducible Research")
 
 ###load additional packages
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(lattice)
 
 ###read data file
@@ -22,7 +34,8 @@ df1 <- read.csv("activity.csv", stringsAsFactors=FALSE)
 
 
 ## What is mean total number of steps taken per day?
-```{r, echo=TRUE}
+
+```r
 ###calculate total number of steps taken per day
 df2 <- aggregate(df1$steps, list(df1$date), sum)
 colnames(df2) <- c("date", "steps")
@@ -30,35 +43,68 @@ colnames(df2) <- c("date", "steps")
 ###create histogram of total number of steps taken per day
 hist(df2$steps, main = "Histogram of Total Number of Steps Taken per Day",
      xlab="Steps per Day")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 ###calculate mean of the total number of steps taken per day
 mean(df2$steps, na.rm=TRUE)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 ###calculate median of the total number of steps taken per day
 median(df2$steps, na.rm=TRUE)
 ```
 
+```
+## [1] 10765
+```
+
 
 ## What is the average daily activity pattern?
-```{r, echo=TRUE}
+
+```r
 ###create time series plot average number of steps/interval
 df3 <- df1 %>%
     group_by(interval) %>%
     summarise_each(funs(mean(., na.rm=TRUE)), -date)
 plot(df3, type="l", main="Average Steps per Interval")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 ###Which 5-minute interval, on average across all the days in the dataset,
 ###contains the maximum number of steps?
 df3[which(df3$steps == max(df3$steps)), ]
 ```
 
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval    steps
+## 1      835 206.1698
+```
+
 
 ## Imputing missing values
-```{r, echo=TRUE}
+
+```r
 ###calculate total number of rows with missing values
 x <- is.na(df1$steps)
 sum(x)
+```
 
+```
+## [1] 2304
+```
+
+```r
 ###replace missing steps values with mean step value for that interval
     ###step 1: split original dataframe to isolate rows w/missing "steps" value
     df4a <- df1[!x,]
@@ -79,17 +125,32 @@ colnames(df6) <- c("date", "steps")
 ###create histogram of total number of steps taken per day
 hist(df6$steps, main = "Histogram of Total Number of Steps Taken per Day", 
      xlab="Steps per Day")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
 ###calculate mean of the total number of steps taken per day
 mean(df6$steps, na.rm=FALSE)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 ###calculate median of the total number of steps taken per day
 median(df6$steps, na.rm=FALSE)
 ```
 
+```
+## [1] 10766.19
+```
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r, echo=TRUE}
+
+```r
 ###Create new factor variable in the dataset with two levels: weekday & weekend
     ###step 1: create dataframe of days of week mapped to weekday/weekend factor
     dow <- matrix(data = c("Monday","Tuesday","Wednesday","Thursday","Friday",
@@ -123,3 +184,5 @@ xyplot(steps~interval|type, df9,
        xlab="Interval",
        ylab="Number of Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
